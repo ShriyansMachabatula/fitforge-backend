@@ -1,6 +1,3 @@
-## fitforge-backend/.gitignore
-
-```gitignore
 # Python
 __pycache__/
 *.py[cod]
@@ -58,14 +55,13 @@ htmlcov/
 *.log
 logs/
 
-# Flask
-instance/
-.webassets-cache
-
-# Jupyter Notebook
-.ipynb_checkpoints
+# Alembic
+alembic/versions/*.pyc
 
 # mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# FastAPI
+.pytest_cache/
