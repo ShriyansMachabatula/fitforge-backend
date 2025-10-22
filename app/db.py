@@ -51,7 +51,7 @@ def create_tables():
     Create all database tables defined in models.
     This should be called once during initial setup.
     """
-    from app.models import User, Exercise, Workout, Run  # Import models to register them
+    from app.models import User, Exercise, Workout, Run, Plan  # Import models to register them
     Base.metadata.create_all(bind=engine)
     print("✅ All database tables created successfully!")
 
@@ -61,6 +61,6 @@ def drop_tables():
     Drop all database tables. Use with caution!
     Only for development/testing purposes.
     """
-    from app.models import User, Exercise, Workout, Run
+    from app.models import User, Exercise, Workout, Run, Plan
     Base.metadata.drop_all(bind=engine)
     print("⚠️  All database tables dropped!")

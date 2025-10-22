@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import String, Integer, Float, Text, DateTime, Date, ForeignKey, Enum
+from sqlalchemy import String, Integer, Float, Text, DateTime, Date, ForeignKey, Enum, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db import Base
 import enum
@@ -21,13 +21,15 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
     workouts: Mapped[list["Workout"]] = relationship("Workout", back_populates="user", cascade="all, delete-orphan")
     runs: Mapped[list["Run"]] = relationship("Run", back_populates="user", cascade="all, delete-orphan")
+    plans: Mapped[list["Plan"]] = relationship("Plan", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email='{self.email}', name='{self.name}')>"
@@ -77,3 +79,20 @@ class Run(Base):
 
     def __repr__(self) -> str:
         return f"<Run(id={self.id}, user_id={self.user_id}, distance={self.distance_km}km, date='{self.date}')>"
+
+
+class Plan(Base):
+    """Plan model for user fitness plans"""
+    __tablename__ = "plans"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    goals: Mapped[str] = mapped_column(Text, nullable=False)
+    routine_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    # Relationships
+    user: Mapped["User"] = relationship("User", back_populates="plans")
+
+    def __repr__(self) -> str:
+        return f"<Plan(id={self.id}, user_id={self.user_id}, goals='{self.goals[:50]}...')>"

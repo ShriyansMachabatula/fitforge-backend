@@ -44,17 +44,19 @@ def init_db():
         sys.exit(1)
 
 
-def reset_db():
+def reset_db(force=False):
     """Drop and recreate all tables (DESTRUCTIVE!)"""
-    response = input("⚠️  This will DELETE all data. Are you sure? (yes/no): ")
-    if response.lower() == "yes":
-        print("🗑️  Dropping all tables...")
-        drop_tables()
-        print("🚀 Recreating all tables...")
-        create_tables()
-        print("✅ Database reset complete!")
-    else:
-        print("❌ Operation cancelled.")
+    if not force:
+        response = input("⚠️  This will DELETE all data. Are you sure? (yes/no): ")
+        if response.lower() != "yes":
+            print("❌ Operation cancelled.")
+            return
+
+    print("🗑️  Dropping all tables...")
+    drop_tables()
+    print("🚀 Recreating all tables...")
+    create_tables()
+    print("✅ Database reset complete!")
 
 
 if __name__ == "__main__":
@@ -66,10 +68,15 @@ if __name__ == "__main__":
         action="store_true",
         help="Drop and recreate all tables (DESTRUCTIVE!)"
     )
-    
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Skip confirmation prompt when using --reset"
+    )
+
     args = parser.parse_args()
-    
+
     if args.reset:
-        reset_db()
+        reset_db(force=args.force)
     else:
         init_db()
